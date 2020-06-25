@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 from pathlib import Path
 from urllib import parse
 
-ARCHIVE_PATH = './files'
+ARCHIVE_PATH = './files-queue'
 
 
 def get_sou_kb(link):

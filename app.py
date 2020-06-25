@@ -1,24 +1,18 @@
+#!/usr/bin/env python
+# Python 3.6+
+
 import elasticsearch
 from flask import Flask
 from flask import request
 from flask import render_template
-from flask import redirect
-from flask_paginate import Pagination, get_page_parameter
-from flask_debugtoolbar import DebugToolbarExtension
-
+from flask_paginate import Pagination
 from elasticsearch import Elasticsearch
-from elasticsearch_dsl import Search, FacetedSearch, TermsFacet, RangeFacet
+from elasticsearch_dsl import FacetedSearch, RangeFacet
 from elasticsearch_dsl.connections import connections
-
 from urllib.parse import quote
-
 from bleach import clean
 from markupsafe import Markup
-
 from operator import itemgetter
-import json
-
-from pprint import pprint
 
 connections.create_connection(hosts=['localhost'])
 es = Elasticsearch()
@@ -131,17 +125,12 @@ def index():
 
         # Now fetch them
         rs = SouSearch(q, filters=filters, sort=sort)
-        print(json.dumps(rs._s.to_dict(), indent=4, sort_keys=True))
         response = rs[sou_from:sou_to].execute()
-        pprint(vars(response))
 
         # Sort year facet by year (asc) rather than by total number of hits
         # TODO: let ES do that instead
         response.facets.year = [t for t in response.facets.year if t[1] > 1]
         response.facets.year = sorted(response.facets.year, key=itemgetter(0), reverse=True)
-
-        #pprint(vars(response))
-        #pprint(vars(response.facets.year))
 
         return render_template("sou/front.html", response=response, total=response.hits.total, pagination=pagination, q=q, sort_options=sort_options, sort_by=sort_by, order_by=order_by, order_by_next=order_by_next, sou_from=sou_from+1, sou_to=sou_to)
     except elasticsearch.exceptions.ConnectionError:
@@ -151,8 +140,4 @@ def index():
 
 
 if __name__ == '__main__':
-    #app.config['PROFILE'] = True
-    #app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[30])
-    #app.run(debug=True)
     app.run()
-    #bjoern.run(app, '127.0.0.1', 4500)

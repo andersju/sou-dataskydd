@@ -11,7 +11,6 @@ import os
 import re
 import sys
 import time
-from pprint import pprint
 
 ARCHIVE_PATH = './files'
 
