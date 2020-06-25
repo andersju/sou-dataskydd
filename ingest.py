@@ -5,6 +5,7 @@
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import TransportError
 from elasticsearch.helpers import bulk, streaming_bulk
+from pathlib import Path
 import glob
 import json
 import os
@@ -120,6 +121,9 @@ def main():
     move_files = False
     if len(sys.argv) > 2 and sys.argv[2] == 'true':
         move_files = True
+
+    # Make sure ARCHIVE_PATH exists
+    Path(ARCHIVE_PATH).mkdir(parents=True, exist_ok=True)
 
     start = time.time()
     client = Elasticsearch()
