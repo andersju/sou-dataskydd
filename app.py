@@ -9,7 +9,6 @@ from flask_paginate import Pagination
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import FacetedSearch, RangeFacet
 from elasticsearch_dsl.connections import connections
-from urllib.parse import quote
 from bleach import clean
 from markupsafe import Markup
 from operator import itemgetter
@@ -27,11 +26,6 @@ def do_clean(text, **kw):
     return Markup(clean(text, **kw))
 
 
-@app.template_filter('url_encode')
-def url_encode(url):
-    return quote(url)
-
-
 @app.template_filter('build_query_string')
 def build_query_string(query_dict):
     new_params = []
@@ -43,10 +37,8 @@ def build_query_string(query_dict):
 
 
 class SouSearch(FacetedSearch):
-    # Index to search
-    index = 'sou'
-    # Fields to search
-    fields = ['number^2', 'title^3', 'full_text']
+    index = 'sou'  # Index to search
+    fields = ['number^2', 'title^3', 'full_text']  # Fields to search
 
     facets = {
         'year': RangeFacet(field='year', ranges=[
@@ -80,17 +72,24 @@ def index():
     q = request.args.get('q', '')
     year = request.args.getlist('year')
 
+    # If there's no query and no sort option explicitly set - e.g. if user just
+    # arrived - sort by year/number in descending order
     if not q and not request.args.get('sort_by'):
         sort_by = 'number_sort'
     else:
         sort_by = request.args.get('sort_by', '_score')
     order_by = request.args.get('order_by', 'desc')
 
+    # Sort by score (relevance) by default, and don't let users sort by
+    # anything other than what's specified belove
     if sort_by not in ['number_sort', 'title_sort', '_score']:
         sort_by = '_score'
 
     sort = [{sort_by: {'order': order_by}}]
 
+    # The following is to make sure we can create appropriate sort links.
+    # If current sort is asc, then clicking again should make it desc, and
+    # vice versa.
     if request.args.get('order_by') == 'asc':
         order_by_next = 'desc'
     elif request.args.get('order_by') == 'desc':
@@ -98,12 +97,14 @@ def index():
     else:
         order_by_next = 'asc'
 
+    # Display name, actual sort field, default order
     sort_options = [
         ('relevans', '_score', 'desc'),
         ('år och nummer', 'number_sort', 'asc'),
         ('titel', 'title_sort', 'asc'),
     ]
 
+    # Dictionary of possible facets
     filters = {'year': year}
 
     try:

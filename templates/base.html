@@ -6,7 +6,7 @@
     <meta name="description" content="Fulltextsökning i SOU:er från 1922 till idag.">
     <meta name="author" content="Dataskydd.net">
     <meta name="referrer" content="no-referrer">
-    <title>sou.dataskydd.net</title>
+    <title>{% if q %}{{ q }} | {% endif %}sou.dataskydd.net</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>

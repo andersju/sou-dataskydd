@@ -1,22 +1,18 @@
 <div class="hit">
     <h2>
-        {% if sou.url_pdf %}
-        <a href="{{ sou.url_pdf }}">
+        <a href="{% if sou.url_pdf %}{{ sou.url_pdf }}{% else %}{{ sou.url }}{% endif %}">
+            <strong>{{ sou.number }}</strong>
+            {% if 'title' in sou.meta.highlight %}
+            {{ sou.meta.highlight.title|first|safe }}
             {% else %}
-            <a href="{{ sou.url }}">
-                {% endif %}
-                <strong>{{ sou.number }}</strong>
-                {% if 'title' in sou.meta.highlight %}
-                {{ sou.meta.highlight.title|first|safe }}
-                {% else %}
-                {{ sou.title }}
-                {% endif %}
-            </a>
+            {{ sou.title }}
+            {% endif %}
+        </a>
     </h2>
 
     {% if 'full_text' in sou.meta.highlight %}
-    {% for fragment in sou.meta.highlight.full_text %}
-    <p>… {{ fragment|clean(tags=['em']) }} …</p>
-    {% endfor %}
+        {% for fragment in sou.meta.highlight.full_text %}
+        <p>… {{ fragment|clean(tags=['em']) }} …</p>
+        {% endfor %}
     {% endif %}
 </div>
