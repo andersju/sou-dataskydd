@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row search-header">
+    <div class="column search-hitcount">
+        {% if total.value == 1 %}
+        {{ total.value }} träff
+        {% else %}
+        {{ total.value }} träffar
+        {% endif %}
+    </div>
+    <div class="column search-sort">
+        Sortering:
+        {% for (title, field, default_sort) in sort_options %}
+        {% if sort_by == field %}
+        <strong>
+            <a href="/?{{ request.args|build_query_string }}&sort_by={{ field }}&order_by={{ order_by_next }}">
+                {{ title|safe }} {% if order_by == 'asc' %}↑{% else %}↓{% endif %}
+            </a>
+        </strong>
+        {% else %}
+        <a href="/?{{ request.args|build_query_string }}&sort_by={{ field }}&order_by={{ default_sort }}">{{ title|safe
+            }}</a>
+        {% endif %}
+
+        {% if not loop.last %} / {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<div class="hits">
+    {% for sou in response %}
+    {% include "sou/sou_snippet.html" %}
+    {% endfor %}
+</div>
+
+{{ pagination.links }}
+{% endblock %}
+
+{% block sidebar %}
+<form id="search_form" method="GET" action="/">
+    <input type="hidden" id="q" name="q" value="{{ q }}">
+    {% with facet_display_name="År", facet_name="year", facet_items=response.facets.year %}
+    {% include "sou/facet.html" %}
+    {% endwith %}
+    <button class="button is-small is-info">Filtrera</button>
+</form>
+<p>
+    <a href="/">Rensa filter</a>
+</p>
+{% endblock %}

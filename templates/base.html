@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Fulltextsökning i SOU:er från 1922 till idag.">
+    <meta name="author" content="Dataskydd.net">
+    <meta name="referrer" content="no-referrer">
+    <title>sou.dataskydd.net</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="header">
+    <section class="container">
+        <h1>
+            <a href="/"><span class="has-text-black">sou | <span class="ds-orange">dataskydd</span><strong>.net</strong></span></a>
+        </h1>
+        <h2>
+            Fulltextsök i SOU:er från 1922 till idag
+        </h2>
+        <form class="row row-center" role="search" method="get" action="/" role="search">
+            <input class="search-input" type="text" name="q" value="{{ q }}" placeholder="Sök">
+            <button class="search-button">Sök</button>
+        </form>
+    </section>
+</div>
+
+<section class="container">
+    <div class="row">
+        <div class="column column-80">
+            {% block content %}{% endblock %}
+        </div>
+
+        <div class="column sidebar">
+            {% block sidebar %}{% endblock %}
+        </div>
+    </div>
+</section>
+<section>
+    <footer class="container">
+        <p>Sökmotorn bygger dels på <a href="https://regina.kb.se/sou/">KB:s inskannade SOU:er</a> (1922-1999), dels på <a href="http://data.riksdagen.se/">Riksdagens öppna data</a> (2000-).
+            SOU:erna från KB kan innehålla OCR-fel. Vi reserverar oss för att även andra typer av fel kan förekomma.</p>
+
+        <p>En tjänst från <a href="https://dataskydd.net"><span class="has-text-black"><span class="ds-orange">dataskydd</span><strong>.net</strong></span></a>.</p>
+
+        <p>Kod på <a href="https://github.com/andersju/sou-dataskydd">GitHub</a>, frågor/feedback till <a href="mailto:info@dataskydd.net">info@dataskydd.net</a> eller <a href="https://twitter.com/dataskyddnet">@dataskyddnet</a>.</p>
+
+        <p>Personuppgiftsbehandling: webbplatsen använder varken kakor eller tredjeparter. Vi loggar inget.</p>
+    </footer>
+</section>
+</body>
+</html>

@@ -1,0 +1,223 @@
+$font-stack-system: (
+  system-ui,
+  -apple-system,
+  BlinkMacSystemFont,
+  "Avenir Next",
+  "Avenir",
+  "Segoe UI",
+  "Lucida Grande",
+  "Helvetica Neue",
+  "Helvetica",
+  "Fira Sans",
+  "Roboto",
+  "Noto",
+  "Droid Sans",
+  "Cantarell",
+  "Oxygen",
+  "Ubuntu",
+  "Franklin Gothic Medium",
+  "Century Gothic",
+  "Liberation Sans",
+  sans-serif,
+);
+
+$color-primary: #3273dc;
+$color-secondary: #4a4a4a;
+
+@import "../milligram-1.4.0/milligram";
+
+.ds-orange { color: #f66931; }
+.has-text-black { color: black; }
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body,
+.button,
+button,
+input,
+select
+{
+    font-family: $font-stack-system;
+    font-weight: 400;
+}
+
+a:hover,
+a:focus {
+  color: $color-primary;
+  text-decoration: underline;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 400;
+}
+
+label {
+  font-weight: 400;
+}
+
+input {
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.button,
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  font-size: 1.6rem;
+  letter-spacing: 0;
+  line-height: 1.6rem;
+  padding: 0 1.6rem;
+  text-transform: none;
+}
+
+.header {
+  background-color: #f5f5f5;
+  margin-bottom: 2rem;
+  padding-bottom: 2.5rem;
+  padding-top: 2rem;
+  width: 100%;
+
+  h1 {
+    font-size: 3.6rem;
+
+    > a:hover {
+      text-decoration: none;
+    }
+  }
+
+  h2 {
+    color: #4a4a4a;
+    font-size: 2rem;
+    letter-spacing: -.06rem;
+    margin-top: -1.5rem;
+  }
+
+  form {
+    margin-bottom: 0;
+    margin-left: 0;
+    max-width: 80rem;
+
+    > input {
+      background-color: white;
+    }
+  }
+}
+
+.search-input {
+  border-bottom-right-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-right: 0;
+  margin: 0;
+}
+
+.search-button {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  margin: 0;
+}
+
+.sidebar {
+  h4 {
+    margin-bottom: 0;
+  }
+
+  form {
+  margin-bottom: 0;
+  }
+}
+
+.search-sort {
+  text-align: right;
+}
+
+.hit {
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+
+  h2 {
+    font-size: 2rem;
+    letter-spacing: -.06rem;
+    line-height: 1.25;
+    margin-bottom: 0;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+
+  em {
+    background-color: #ff0;
+    font-style: normal;
+  }
+}
+
+footer {
+  p {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    max-width: 80rem;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  -webkit-clip-path: inset(50%);
+  clip-path: inset(50%);
+  border: 0;
+}
+
+// Adapted from https://github.com/mgwidmann/scrivener_html/issues/88#issuecomment-496868949
+.pagination {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+  border-radius: .25rem;
+  margin-bottom: 1rem;
+}
+
+.pagination .active {
+  pointer-events: none;
+}
+
+.page-item:first-child .page-link {
+  margin-left: 0;
+  border-top-left-radius: .25rem;
+  border-bottom-left-radius: .25rem;
+}
+
+.page-link {
+  position: relative;
+  display: block;
+  padding: 1rem 1.5rem;
+  margin-left: -1px;
+  line-height: 1.25;
+  color: #007bff;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+}
+
+.page-item.active .page-link {
+  background-color: #3273dc;
+  color: white;
+}
+
+.page-item.disabled .page-link {
+  color: grey;
+}
