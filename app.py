@@ -2,9 +2,7 @@
 # Python 3.6+
 
 import elasticsearch
-from flask import Flask
-from flask import request
-from flask import render_template
+from flask import Flask, request, render_template, send_from_directory
 from flask_paginate import Pagination
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import FacetedSearch, RangeFacet
@@ -15,7 +13,13 @@ from operator import itemgetter
 
 connections.create_connection(hosts=['localhost'])
 es = Elasticsearch()
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
+
+
+# https://stackoverflow.com/a/14625619
+@app.route('/robots.txt')
+def static_from_root():
+    return send_from_directory(app.static_folder, request.path[1:])
 
 
 # https://stackoverflow.com/a/27119458

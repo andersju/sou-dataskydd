@@ -2,5 +2,5 @@ files
 files-queue
 .idea
 __pycache__
-static
 notes
+static/css
