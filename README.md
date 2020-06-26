@@ -157,7 +157,7 @@ Group=sou
 Restart=always
 WorkingDirectory=/home/sou/sou-dataskydd
 Environment="PATH=/home/sou/souenv/bin"
-ExecStart=/home/sou/souenv/bin/gunicorn --workers 3 --bind 127.0.0.1:5000 app:app
+ExecStart=/home/sou/souenv/bin/gunicorn --workers 10 --bind 127.0.0.1:5000 app:app
 
 [Install]
 WantedBy=multi-user.target
@@ -187,6 +187,13 @@ Edit `/etc/caddy/Caddyfile` and make sure it has only the following lines:
 ```
 sou.dataskydd.net {
   reverse_proxy 127.0.0.1:5000
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options "nosniff"
+    X-Frame-Options "DENY"
+    Referrer-Policy "no-referrer"
+    Content-Security-Policy "default-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+  }
 }
 ```
 
