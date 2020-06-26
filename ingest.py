@@ -115,7 +115,7 @@ def generate_actions(json_path):
 
 def main():
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <path with JSON files to import>")
+        print(f"Usage: {sys.argv[0]} <path with JSON files to import> [true]")
         sys.exit(1)
 
     move_files = False
