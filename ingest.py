@@ -5,6 +5,7 @@
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import TransportError
 from elasticsearch.helpers import bulk, streaming_bulk
+from pathlib import Path
 import glob
 import json
 import os
@@ -114,12 +115,15 @@ def generate_actions(json_path):
 
 def main():
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <path with JSON files to import>")
+        print(f"Usage: {sys.argv[0]} <path with JSON files to import> [true]")
         sys.exit(1)
 
     move_files = False
     if len(sys.argv) > 2 and sys.argv[2] == 'true':
         move_files = True
+
+    # Make sure ARCHIVE_PATH exists
+    Path(ARCHIVE_PATH).mkdir(parents=True, exist_ok=True)
 
     start = time.time()
     client = Elasticsearch()
