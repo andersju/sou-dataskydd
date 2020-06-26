@@ -2,13 +2,12 @@
 
 This repo contains the code for [sou.dataskydd.net](https://sou.dataskydd.net), a service that lets you do
 full-text search on all the [_Swedish Government Official Reports_](https://en.wikipedia.org/wiki/Statens_offentliga_utredningar)
-(Statens Offentliga Utredningar, SOU) that have been published from 1922 to
-today.
+(Statens Offentliga Utredningar, SOU) that have been published from 1922 to today.
 
 Linköping University (LiU) provides a [similar service](https://ep.liu.se/databases/sou/default.aspx),
-but 1) it doesn't provide highlighted extracts, and 2) it cannot sort by relevance, making it
-considerably less useful than it could have been. So, I figured I could hack up something better with a little
-Flask and Elasticsearch.
+but 1) it doesn't provide highlighted extracts, 2) it cannot sort by relevance, making it
+considerably less useful than it could have been, and 3) it appears to be missing a few hundred SOUs from
+the 1990s. So, I figured I could hack up something better with a little Flask and Elasticsearch.
 
 There are three parts: a couple of scripts to fetch SOUs and turn them into appropriately formatted JSON
 files; a script to ingest said files into Elasticsearch; and a single-file Flask app for the web service.
@@ -17,7 +16,7 @@ As of now the code is "quick weekend project" quality, but perhaps that will cha
 ## Requirements
 
 * Python 3.6+
-* ElasticSearch 7.x
+* Elasticsearch 7.x
 
 ## Getting started
 
@@ -186,14 +185,15 @@ sudo apt install caddy
 
 Edit `/etc/caddy/Caddyfile` and make sure it has only the following lines:
 ```
-sou.dataskydd.net
-reverse_proxy 127.0.0.1:5000
+sou.dataskydd.net {
+  reverse_proxy 127.0.0.1:5000
+}
 ```
 
 Then `sudo systemctl restart caddy` et voilà, https://sou.dataskydd.net should work in a moment, certificate
 and all, and with automatic redirect from http://. Neat!
 
-All that's left is to fetch SOU files and ingest them into Elasticsearch. For example, as user sou:
+Now time to fetch SOU files and ingest them into Elasticsearch. For example, as user sou:
 
 ```sh
 source ~/souenv/bin/activate
@@ -202,10 +202,29 @@ python get_sou_riksdagen.py http://data.riksdagen.se/dataset/dokument/sou-2015-.
 python ingest.py files-queue true
 ```
 
+At this point documents should be available and searchable through the Flask app.
+
+To regularly add new SOUs we *could* subscribe to an RSS feed. For the moment, let's do it more crudely
+and use a small script to fetch the zip for the current year and process it like above. It's not a lot of
+data, and existing SOUs won't be added again:
+
+```sh
+chmod +x ~/sou-dataskydd/get_and_ingest_latest.sh
+crontab -e
+```
+
+In crontab, add the following to fetch and ingest at 02:15 every day, writing (only) errors to
+`~/get_and_ingest.log`:
+
+```
+15      2       *       *       *        ~/sou-dataskydd/get_and_ingest_latest.sh 2> ~/get_and_ingest.log
+```
+
 ### TODO/ideas
 
 * data.riksdagen.se has an XML feed. Use it for updates?
-*
+* Both HTML/PDF links? Show file size?
+* For SOUs >= 2000: related documents?
 
 ### Contact & credits
 
