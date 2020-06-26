@@ -221,3 +221,43 @@ footer {
 .page-item.disabled .page-link {
   color: grey;
 }
+
+/* Not quite mobile-first */
+@media (max-width: 991px) {
+  body {
+    font-size: 1.4em;
+  }
+
+  .container {
+    padding: 0 1.2rem;
+  }
+
+  .header {
+    h1 {
+      font-size: 2.6rem;
+    }
+
+    form {
+      max-width: 40rem;
+    }
+  }
+
+  .search-sort {
+    text-align: left;
+  }
+  .search-button {
+    border-radius: unset;
+  }
+
+  .row .column.column-80 {
+    max-width: 100%;
+  }
+
+  .hit h2 {
+    font-size: 1.6rem;
+  }
+
+  .page-link {
+    padding: 0.8rem 1.2rem;
+  }
+}
