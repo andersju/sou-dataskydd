@@ -129,9 +129,10 @@ sudo systemctl enable elasticsearch
 sudo systemctl start elasticsearch
 
 # Create user that'll run the Flask app and fetch/ingest SOUs
-sudo useradd -m sou -s /bin/bash
-# Become sou
-sudo -i -u sou
+sudo useradd -m -s /usr/sbin/nologin sou
+# Become sou, go to home directory
+sudo -u sou bash
+cd
 # Create virtual environment
 python3 -m venv souenv
 source souenv/bin/activate
