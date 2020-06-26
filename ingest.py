@@ -92,9 +92,9 @@ def generate_actions(json_path):
             number_sort_serial = re.sub(r'\D', '', data['sou_number'][5:]).zfill(3)
 
             if 'id' in data:
-                doc_id = data['id']
+                doc_id = f"{data['id']}.pdf.json"
             else:
-                doc_id = "".join(filter(str.isalnum, data["sou_number"]))
+                doc_id = os.path.basename(filename)
 
             yield {
                 "_id": doc_id,
@@ -143,8 +143,8 @@ def main():
             #print(f"Successfully processed {result['_id']}")
             #pprint(result)
             if move_files:
-                from_file = os.path.join(sys.argv[1], f"{result['_id']}.pdf.json")
-                to_file = os.path.join(ARCHIVE_PATH, f"{result['_id']}.pdf.json")
+                from_file = os.path.join(sys.argv[1], f"{result['_id']}")
+                to_file = os.path.join(ARCHIVE_PATH, f"{result['_id']}")
                 os.rename(from_file, to_file)
 
     end = time.time()
