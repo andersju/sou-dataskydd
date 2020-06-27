@@ -1,6 +1,6 @@
 <div class="hit">
     <h2>
-        <a href="{% if sou.url_pdf %}{{ sou.url_pdf }}{% else %}{{ sou.url }}{% endif %}">
+        <a href="{% if sou.url %}{{ sou.url }}{% else %}{{ sou.url_pdf }}{% endif %}">
             <strong>{{ sou.number }}</strong>
             {% if 'title' in sou.meta.highlight %}
             {{ sou.meta.highlight.title|first|safe }}
