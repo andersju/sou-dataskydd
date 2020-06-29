@@ -37,6 +37,18 @@
     </div>
 </section>
 <footer class="container">
+<p><strong>Citationstecken</strong> används för frassökning: <code>"katter i träd"</code></p>
+<p><strong>AND</strong>: implicit defaultoperator. <code>katt hund</code> blir automatiskt <code>katt AND hund</code> och matchar dokument där katt och hund förekommer.</p>
+<p><strong>OR</strong>: <code>katt OR hund</code> eller <code>katt | hund</code> matchar dokument där katt och/eller hund förekommer.</p>
+<p><strong>NOT</strong>: <code>katt NOT hund</code> eller <code>katt -hund</code> matchar dokument där katt men inte hund förekommer.</p>
+<p><strong>Parenteser</strong> kan användas för att gruppera sökuttryck och bestämma ordning: <code>veterinär (katt OR havsörn)</code>.</p>
+<p><strong>Trunkering/wildcard</strong>: <code>tr?st</code> matchar trist, tröst, osv. <code>rymd*</code> matchar rymd, rymdforskning, osv.
+<code>f?ord*</code> matchar fjord, fnord, fåordig, fjordarna, osv.</p>
+<p><strong>Hela fulltexten, nummer och titel</strong> söks per default, men du kan avgränsa till specifika fält: <code>title:(polis OR domstol)</code> matchar dokument med polis eller domstol i titeln.
+    <code>year:2007</code> matchar alla dokument från 2007. <code>year:[1970 TO 1976] personnummer OR integritet</code> matchar alla dokument från 1970-1976 med personnummer
+eller integritet i något av fälten.</p>
+<p><strong>Närhet</strong>: <code>"fysisk integritet"~5</code> matchar dokument där "fysisk" och "integritet" förekommer inom 5 ords avstånd från varandra.</p>
+
     <p>Sökmotorn bygger dels på <a href="https://regina.kb.se/sou/">KB:s inskannade SOU:er</a> (1922-1999), dels på <a href="http://data.riksdagen.se/">Riksdagens öppna data</a> (2000-).
         SOU:erna från KB kan innehålla OCR-fel. Vi reserverar oss för att även andra typer av fel kan förekomma. Antalet träffar är inte lika med antalet unika matchande SOU:er;
         en del SOU:er består av flera olika delar som indexeras separat.</p>
