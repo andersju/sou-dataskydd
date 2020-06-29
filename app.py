@@ -68,6 +68,14 @@ class SouSearch(FacetedSearch):
         # Don't include the actual full SOU text in result; we only need the highlighted extract
         return s.source(excludes=["full_text"])
 
+    def query(self, search, query):
+        if query:
+            if self.fields:
+                return search.query('query_string', fields=self.fields, query=query, default_operator='and')
+            else:
+                return search.query('query_string', query=query, default_operator='and')
+        return search
+
 
 @app.route('/')
 def index():
@@ -118,7 +126,8 @@ def index():
         # What page are we on?
         page = request.args.get('page', type=int, default=1)
         # Create a pagination object based on the number of hits and the current page number
-        pagination = Pagination(page=page, total=response_count.hits.total.value, record_name='sou', per_page=hits_per_page, bs_version=4)
+        pagination = Pagination(page=page, total=response_count.hits.total.value,
+                                record_name='sou', per_page=hits_per_page, bs_version=4, inner_window=1, outer_window=0)
 
         # Make sure page number stays within the realm of possibility
         if page > pagination.total_pages > 0:
@@ -137,9 +146,13 @@ def index():
         response.facets.year = [t for t in response.facets.year if t[1] > 1]
         response.facets.year = sorted(response.facets.year, key=itemgetter(0), reverse=True)
 
-        return render_template("sou/front.html", response=response, total=response.hits.total, pagination=pagination, q=q, sort_options=sort_options, sort_by=sort_by, order_by=order_by, order_by_next=order_by_next, sou_from=sou_from+1, sou_to=sou_to)
+        return render_template("sou/front.html", response=response, total=response.hits.total,
+                               pagination=pagination, q=q, sort_options=sort_options, sort_by=sort_by,
+                               order_by=order_by, order_by_next=order_by_next, sou_from=sou_from+1, sou_to=sou_to)
     except elasticsearch.exceptions.ConnectionError:
-        return render_template("sou/error.html", error_message='Kunde inte ansluta till sökmotorn.'), 500
+        return render_template("sou/error.html", error_title='Ett fel uppstod', error_message='Kunde inte ansluta till sökmotorn.'), 500
+    except elasticsearch.exceptions.RequestError:
+        return render_template("sou/error.html", error_title='Ogiltig sökfråga', error_message='Se över söksträngen och prova på nytt.'), 200
     except:
         return render_template("sou/error.html", error_message='Något gick galet.'), 500
 

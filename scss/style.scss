@@ -67,6 +67,11 @@ input {
   margin: 0;
 }
 
+code {
+  font-size: 90%;
+  white-space: normal;
+}
+
 .button,
 button,
 input[type="button"],
@@ -130,8 +135,18 @@ input[type="submit"] {
     margin-bottom: 0;
   }
 
+  button {
+    margin-bottom: 2rem;
+  }
+
   form {
   margin-bottom: 0;
+  }
+
+  p {
+    font-size: 1.4rem;
+    line-height: 1.5;
+    margin-bottom: 0.625rem;
   }
 }
 
@@ -237,6 +252,10 @@ footer {
       font-size: 2.6rem;
     }
 
+    h2 {
+      font-size: 1.6rem;
+    }
+
     form {
       max-width: 40rem;
     }
@@ -249,7 +268,7 @@ footer {
     border-radius: unset;
   }
 
-  .row .column.column-80 {
+  .row .column.column-75 {
     max-width: 100%;
   }
 
