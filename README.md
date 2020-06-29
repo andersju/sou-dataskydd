@@ -4,10 +4,10 @@ This repo contains the code for [sou.dataskydd.net](https://sou.dataskydd.net), 
 full-text search on all the [_Swedish Government Official Reports_](https://en.wikipedia.org/wiki/Statens_offentliga_utredningar)
 (Statens Offentliga Utredningar, SOU) that have been published from 1922 to today.
 
-Linköping University (LiU) provides a [similar service](https://ep.liu.se/databases/sou/default.aspx),
-but 1) it doesn't provide highlighted extracts, 2) it cannot sort by relevance, making it
-considerably less useful than it could have been, and 3) it appears to be missing a few hundred SOUs from
-the 1990s. So, I figured I could hack up something better with a little Flask and Elasticsearch.
+Similar services: Linköping university's [SOU-sök](https://ep.liu.se/databases/sou/default.aspx) (no highlighted
+extracts, doesn't sort by relevance, missing a few hundred SOUs from the 1990s);  [lagen.nu](https://lagen.nu/)
+(excellent, and also serves as an archive, but unclear search options and occasional bugs).
+So this here can serve as a complement to the latter.
 
 There are three parts: a couple of scripts to fetch SOUs and turn them into appropriately formatted JSON
 files; a script to ingest said files into Elasticsearch; and a single-file Flask app for the web service.
