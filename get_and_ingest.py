@@ -194,8 +194,11 @@ def add_document_to_db(con, data, titles):
     year = data['dokumentstatus']['dokument']['rm']
     number = data['dokumentstatus']['dokument']['nummer']
     year_number = f"{year}:{number}"
-    doc_type = data['dokumentstatus']['dokument']['typ']
     related_id = data['dokumentstatus']['dokument']['relaterat_id']
+    doc_type = data['dokumentstatus']['dokument']['typ']
+
+    if doc_type not in ['sou', 'ds']:
+        return
 
     title = data['dokumentstatus']['dokument']['titel']
     # Nearly all SOUs 2000-2004 from data.riksdagen.se are missing their titles in their metadata,
