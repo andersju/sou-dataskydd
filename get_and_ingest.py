@@ -23,13 +23,14 @@ from bs4 import BeautifulSoup
 
 
 DEFAULT_DB_PATH = os.path.join(os.path.dirname(__file__), 'sou.sqlite3')
+ES_INDEX_NAME = 'sou'
 LOG_FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=LOG_FORMAT)
 logging.getLogger().setLevel(logging.INFO)
 log = logging.getLogger(__name__)
 
 
-def create_es_index(client, index):
+def create_es_index(client, index, reset=False):
     create_index_body = {
         "settings": {
             "number_of_shards": 1,
@@ -68,7 +69,8 @@ def create_es_index(client, index):
     }
 
     try:
-        client.indices.delete(index=index)
+        if reset:
+            client.indices.delete(index=index)
         client.indices.create(index=index, body=create_index_body)
     except TransportError as e:
         if e.error == "resource_already_exists_exception":
@@ -116,6 +118,12 @@ def generate_es_actions(con, reindex):
         }
     cur.close()
     pass
+
+
+def reset_es_index(index_name):
+    log.info(f"Deleting and creating Elasticsearch index {index_name}")
+    client = Elasticsearch()
+    create_es_index(client, index_name, True)
 
 
 def ingest_documents(con, index_name, reindex=False):
@@ -324,7 +332,8 @@ def usage():
     print(f"Usage:\n"
           f"\t{sys.argv[0]} get <url to json zip>\n"
           f"\t{sys.argv[0]} scrape-kb\n"
-          f"\t{sys.argv[0]} ingest [all]")
+          f"\t{sys.argv[0]} ingest [all]\n"
+          f"\t{sys.argv[0]} reset-index")
 
     sys.exit(1)
 
@@ -343,7 +352,9 @@ def main():
         scrape_kb(con)
     elif sys.argv[1] == 'ingest':
         reindex = True if argc == 3 and sys.argv[2] == 'all' else False
-        ingest_documents(con, 'sou', reindex)
+        ingest_documents(con, ES_INDEX_NAME, reindex)
+    elif sys.argv[1] == 'reset-index':
+        reset_es_index(ES_INDEX_NAME)
     else:
         con.close()
         usage()
