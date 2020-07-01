@@ -29,7 +29,7 @@
 </div>
 
 <div class="hits">
-    {% for sou in response %}
+    {% for doc in response %}
     {% include "sou/sou_snippet.html" %}
     {% endfor %}
 </div>
@@ -38,14 +38,19 @@
 {% endblock %}
 
 {% block sidebar %}
-{% if response.facets.year %}
-<form id="search_form" method="GET" action="/">
-    <input type="hidden" id="q" name="q" value="{{ q }}">
-    {% with facet_display_name="År", facet_name="year", facet_items=response.facets.year %}
-        {% include "sou/facet.html" %}
-    {% endwith %}
-    <button class="button is-small is-info">Filtrera</button>
-</form>
-{% endif %}
+    <form id="search_form" method="GET" action="/">
+        <input type="hidden" id="q" name="q" value="{{ q }}">
+        {% if response.facets.year %}
+            {% with facet_display_name="Typ", facet_name="type", facet_items=response.facets.type %}
+                {% include "sou/facet.html" %}
+            {% endwith %}
+        {% endif %}
+        {% if response.facets.year %}
+            {% with facet_display_name="År", facet_name="year", facet_items=response.facets.year %}
+                {% include "sou/facet.html" %}
+            {% endwith %}
+        {% endif %}
+        <button class="button is-small is-info">Filtrera</button>
+    </form>
 
 {% endblock %}

@@ -1,19 +1,25 @@
 <div class="hit">
     <h2>
-        <a href="{% if sou.url %}{{ sou.url }}{% else %}{{ sou.url_pdf }}{% endif %}">
-            <strong>{{ sou.number }}</strong>
-            {% if 'title' in sou.meta.highlight %}
-            {{ sou.meta.highlight.title|first|safe }}
+        <a href="{{ doc.url }}">
+            <strong>{{ doc.type|translate_tag }} {{doc.year}}:{{ doc.number }}</strong>
+            {% if 'title' in doc.meta.highlight %}
+            {{ doc.meta.highlight.title|first|safe }}
             {% else %}
-            {{ sou.title }}
+            {{ doc.title }}
             {% endif %}
         </a>
-        <span class="html-link"> | <a href="https://lagen.nu/sou/{{ sou.number }}">lagen.nu (html)</a></span>
     </h2>
 
-    {% if 'full_text' in sou.meta.highlight %}
-        {% for fragment in sou.meta.highlight.full_text %}
-        <p>… {{ fragment|clean(tags=['em']) }} …</p>
+    <span class="meta">
+        <a href="https://lagen.nu/{{ doc.type }}/{{ doc.year }}:{{ doc.number }}">html</a> (lagen.nu)
+        {% if doc.related_id %}
+            | Bilaga. Se <a href="/?q={{ doc.related_id }}">huvuddokument</a>.
+        {% endif %}
+    </span>
+
+    {% if 'full_text' in doc.meta.highlight %}
+        {% for fragment in doc.meta.highlight.full_text %}
+        <p class="fragment">… {{ fragment|clean(tags=['em']) }} …</p>
         {% endfor %}
     {% endif %}
 </div>

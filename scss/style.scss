@@ -21,6 +21,10 @@ $font-stack-system: (
   sans-serif,
 );
 
+$font-stack-serif: (
+  Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif", "Bitstream Vera Serif", "Liberation Serif", Georgia, serif
+);
+
 $color-primary: #3273dc;
 $color-secondary: #4a4a4a;
 
@@ -132,7 +136,8 @@ input[type="submit"] {
 
 .sidebar {
   h4 {
-    margin-bottom: 0;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
   }
 
   button {
@@ -141,6 +146,10 @@ input[type="submit"] {
 
   form {
   margin-bottom: 0;
+  }
+
+  .facet {
+    margin-bottom: 1.5rem;
   }
 }
 
@@ -168,17 +177,29 @@ input[type="submit"] {
     font-style: normal;
   }
 
-  .html-link {
+  .meta {
+    display: block;
     font-size: 1.4rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .fragment {
+    font-family: $font-stack-serif;
   }
 }
 
-footer {
-  p {
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
-    max-width: 80rem;
-  }
+.help {
+  background-color: #f5f5f5;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+}
+
+.help p,
+footer p {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  max-width: 80rem;
 }
 
 .sr-only {

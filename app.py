@@ -5,7 +5,7 @@ import elasticsearch
 from flask import Flask, request, render_template, send_from_directory
 from flask_paginate import Pagination
 from elasticsearch import Elasticsearch
-from elasticsearch_dsl import FacetedSearch, RangeFacet
+from elasticsearch_dsl import FacetedSearch, RangeFacet, TermsFacet
 from elasticsearch_dsl.connections import connections
 from bleach import clean
 from markupsafe import Markup
@@ -30,6 +30,16 @@ def do_clean(text, **kw):
     return Markup(clean(text, **kw))
 
 
+@app.template_filter('translate_tag')
+def translate_tag(value):
+    if value == 'sou':
+        return 'SOU'
+    elif value == 'ds':
+        return 'Ds'
+    else:
+        return value
+
+
 @app.template_filter('build_query_string')
 def build_query_string(query_dict):
     new_params = []
@@ -42,9 +52,10 @@ def build_query_string(query_dict):
 
 class SouSearch(FacetedSearch):
     index = 'sou'  # Index to search
-    fields = ['number^2', 'title^3', 'full_text']  # Fields to search
+    fields = ['id_year_number^2', 'title^3', 'full_text']  # Fields to search
 
     facets = {
+        'type': TermsFacet(field='type'),
         'year': RangeFacet(field='year', ranges=[
             ('1922-1929', (1922, 1930)),
             ('1930-1939', (1930, 1940)),
@@ -56,7 +67,7 @@ class SouSearch(FacetedSearch):
             ('1990-1999', (1990, 2000)),
             ('2000-2009', (2000, 2010)),
             ('2010-2019', (2010, 2020)),
-            ('2020-2029', (2020, 2030)),
+            ('2020-', (2020, 2030)),
             ]),
     }
 
@@ -83,18 +94,19 @@ def index():
 
     q = request.args.get('q', '')
     year = request.args.getlist('year')
+    doc_type = request.args.getlist('type')
 
     # If there's no query and no sort option explicitly set - e.g. if user just
     # arrived - sort by year/number in descending order
     if not q and not request.args.get('sort_by'):
-        sort_by = 'number_sort'
+        sort_by = 'year_number_sort'
     else:
         sort_by = request.args.get('sort_by', '_score')
     order_by = request.args.get('order_by', 'desc')
 
     # Sort by score (relevance) by default, and don't let users sort by
     # anything other than what's specified belove
-    if sort_by not in ['number_sort', 'title_sort', '_score']:
+    if sort_by not in ['year_number_sort', 'title_sort', '_score']:
         sort_by = '_score'
 
     sort = [{sort_by: {'order': order_by}}]
@@ -112,12 +124,12 @@ def index():
     # Display name, actual sort field, default order
     sort_options = [
         ('relevans', '_score', 'desc'),
-        ('år och nummer', 'number_sort', 'asc'),
+        ('år och nummer', 'year_number_sort', 'asc'),
         ('titel', 'title_sort', 'asc'),
     ]
 
     # Dictionary of possible facets
-    filters = {'year': year}
+    filters = {'year': year, 'type': doc_type}
 
     try:
         # Figure out total number of hits (but don't actually fetch them)

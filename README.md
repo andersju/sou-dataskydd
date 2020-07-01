@@ -2,16 +2,17 @@
 
 This repo contains the code for [sou.dataskydd.net](https://sou.dataskydd.net), a service that lets you do
 full-text search on all the [_Swedish Government Official Reports_](https://en.wikipedia.org/wiki/Statens_offentliga_utredningar)
-(Statens Offentliga Utredningar, SOU) that have been published from 1922 to today.
+(Statens Offentliga Utredningar, SOU) that have been published from 1922 to today, as well as as
+everything in _Departementsserien_ (Ds) from 2000 and onwards.
 
 Similar services: Linköping university's [SOU-sök](https://ep.liu.se/databases/sou/default.aspx) (no highlighted
 extracts, doesn't sort by relevance, missing a few hundred SOUs from the 1990s);  [lagen.nu](https://lagen.nu/)
 (excellent, and also serves as an archive, but unclear search options and occasional bugs).
 So this here can serve as a complement to the latter.
 
-There are three parts: a couple of scripts to fetch SOUs and turn them into appropriately formatted JSON
-files; a script to ingest said files into Elasticsearch; and a single-file Flask app for the web service.
-As of now the code is "quick weekend project" quality, but perhaps that will change.
+There are two parts: a script that fetches JSON documents from data.riksdagen.se (or scrapes KB) and inserts
+them into an SQLite database, and ingests said documents into Elasticsearch;  and a single-file Flask app
+for the web service. As of now the code approximately "quick weekend project" quality, but perhaps that will change.
 
 ## Requirements
 
@@ -34,28 +35,24 @@ Turns out data.riksdagen.se's 1990-1999 dataset (as of 2020-06-26) does not have
 documents from 1994-1996, and is missing quite a few documents from 1997-1998 and about 20 from 1999. So, sou.dataskydd.net
 uses KB's scanned PDFs for the period 1922-1999.
 
-`get_sou_kb.py` scrapes [KB's sou page](https://regina.kb.se/sou/). It figures out SOU number/year/title/URL/URN,
-downloads the PDF, extracts the text, dumps the aforementioned metadata and text into a JSON file in `files-queue/`
-and then removes the PDF to save space (some scanned SOUs can be hundreds of MB!). This can take a *long* time.
+For Ds reports, data.riksdagen.se is used.
 
-`get_sou_riksdagen.py` takes a URL to a zip with JSON files as an argument, e.g.:
+`get_and_ingest.py scrape-kb` scrapes [KB's sou page](https://regina.kb.se/sou/). It figures out SOU
+number/year/title/URL/URN, downloads the PDF, extracts the text, and saves metadata and text to `sou.sqlite3`.
+This can take a *long* time.
 
-    ./get_sou_riksdagen.py https://data.riksdagen.se/dataset/dokument/sou-2005-2009.json.zip
+`get_and_ingest.py get <url>` takes a URL to a zip with JSON files as an argument, e.g.:
 
-The zip file is downloaded to a temporary directory and extracted. The script goes through each JSON file and
-extracts various data (number, year, title, URL, etc). If the SOU already exists in `files/`, it's skipped;
-otherwise, the full text (which is in HTML) is extracted from the JSON and mangled through BeautifulSoup to get
-rid of HTML elements. The data is then dumped into a new JSON file in `files-queue/`.
+    ./get_and_ingest.py get https://data.riksdagen.se/dataset/dokument/sou-2005-2009.json.zip
 
-`ingest.py` takes a directory an argument. It first creates an Elasticsearch index for the SOUs, if it
-doesn't already exist. It goes through each JSON file in the specified directory and indexes it. The document
- `_id` used is specified by the JSON file, so indexing the same document twice is fine - it'll just be overwritten.
+The zip file is downloaded to a temporary directory. Any document in the zip file not currently in
+the database is added to the database (metadata + full text). Th full text (which is in HTML) is
+extracted from the JSON and mangled through BeautifulSoup to get rid of HTML elements.
 
- If `ingest.py` is called with `true` as its second argument, e.g.:
-
-     ./get_sou_riksdagen.py https://data.riksdagen.se/dataset/dokument/sou-2005-2009.json.zip true
-
- ...then, if indexing succeeded, the JSON file will be moved from `files-queue` to `files`.
+`get_and_ingest.py ingest` creates an Elasticsearch index, if it doesn't already exist.
+It then goes through the SQLite database and ingests any document whose `is_indexed` value is 0, and then
+sets that value to 1. If run with `get_and_ingest.py ingest all`, the `is_indexed` value is ignored (i.e.
+all documents in the database will be (re)indexed).
 
  ### Run Flask app
 
@@ -77,9 +74,8 @@ in production, though. Gunicorn is specified by `requirements.txt`, so you can s
 
 Riksdagen's open data is missing the titles for nearly all of the 1000+ SOUs published 2000-2004. Which means
 these titles are missing on both Riksdagen's own search service, as well as on LiU's service. I noticed that
-lagen.nu has easily parsed lists with correct titles for all SOUs, so `get_sou_titles.py` fetches these and
-puts them in a JSON file (`sou_names.json`), which is then used by `get_sou_riksdagen.py` for the titles for
-SOUs from this range of years.
+lagen.nu has easily parsed lists with correct titles for all SOUs, so I fetched them and put them into
+`titles.json`, which is then used by the import script for the titles from this range of years.
 
 ### Complete recipe
 
@@ -206,8 +202,8 @@ Now time to fetch SOU files and ingest them into Elasticsearch. For example, as 
 ```sh
 source ~/souenv/bin/activate
 cd ~/sou-dataskydd
-python get_sou_riksdagen.py http://data.riksdagen.se/dataset/dokument/sou-2015-.json.zip
-python ingest.py files-queue true
+python get_and_ingest.py get http://data.riksdagen.se/dataset/dokument/sou-2015-.json.zip
+python get_and_ingest.py ingest
 ```
 
 At this point documents should be available and searchable through the Flask app.

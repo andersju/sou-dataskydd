@@ -1,10 +1,12 @@
-<h4>{{ facet_display_name }}</h4>
+<div class="facet">
+    <h4>{{ facet_display_name }}</h4>
 
-{% for (tag, count, selected) in facet_items %}
-<div class="field">
-    <label class="checkbox">
-        <input id="{{ facet_name }}-{{ loop.index }}" type="checkbox" name="{{ facet_name }}" value="{{ tag }}" {% if selected %}checked="checked"{% endif %}>
-        {{ tag }} ({{ count }})
-    </label>
+    {% for (tag, count, selected) in facet_items %}
+    <div class="field">
+        <label class="checkbox">
+            <input id="{{ facet_name }}-{{ loop.index }}" type="checkbox" name="{{ facet_name }}" value="{{ tag }}" {% if selected %}checked="checked"{% endif %}>
+            {{ tag|translate_tag }} ({{ count }})
+        </label>
+    </div>
+    {% endfor %}
 </div>
-{% endfor %}
