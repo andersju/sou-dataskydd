@@ -193,6 +193,10 @@ input[type="submit"] {
   margin-bottom: 1rem;
   padding-bottom: 1rem;
   padding-top: 1rem;
+
+  code {
+    background-color: white;
+  }
 }
 
 .help p,
