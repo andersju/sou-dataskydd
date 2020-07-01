@@ -46,7 +46,7 @@ def build_query_string(query_dict):
     new_params = []
     for key, itemlist in query_dict.lists():
         for item in itemlist:
-            if key in ['q', 'year']:
+            if key in ['q', 'year', 'type']:
                 new_params.append(f"{key}={item}")
     return "&".join(new_params)
 
