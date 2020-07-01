@@ -23,7 +23,7 @@ from bs4 import BeautifulSoup
 
 
 DEFAULT_DB_PATH = os.path.join(os.path.dirname(__file__), 'sou.sqlite3')
-ES_INDEX_NAME = 'sou'
+ES_INDEX_NAME = 'sou2'
 LOG_FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=LOG_FORMAT)
 logging.getLogger().setLevel(logging.INFO)
@@ -94,7 +94,7 @@ def generate_es_actions(con, reindex):
         cur.execute("SELECT * FROM document")
     else:
         cur.execute("SELECT * FROM document WHERE is_indexed = 0")
-    for data in cur.fetchall():
+    for data in cur:
         # For number_sort we pad with zeros for easy sorting. However, some early SOUs have
         # numbers like "1922:1 första serien" (separate from "1922:1"), so to get padding right
         # we also remove any non-digits from the serial number part.

@@ -11,6 +11,7 @@ from bleach import clean
 from markupsafe import Markup
 from operator import itemgetter
 
+ES_INDEX_NAME = 'sou2'
 connections.create_connection(hosts=['localhost'])
 es = Elasticsearch()
 app = Flask(__name__, static_folder='static')
@@ -51,7 +52,7 @@ def build_query_string(query_dict):
 
 
 class SouSearch(FacetedSearch):
-    index = 'sou'  # Index to search
+    index = ES_INDEX_NAME  # Index to search
     fields = ['id_year_number^2', 'title^3', 'full_text']  # Fields to search
 
     facets = {
@@ -76,7 +77,7 @@ class SouSearch(FacetedSearch):
 
     def search(self):
         s = super(SouSearch, self).search()
-        # Don't include the actual full SOU text in result; we only need the highlighted extract
+        # Don't include the actual fulltext in result; we only need the highlighted extract
         return s.source(excludes=["full_text"])
 
     def query(self, search, query):
@@ -139,19 +140,19 @@ def index():
         page = request.args.get('page', type=int, default=1)
         # Create a pagination object based on the number of hits and the current page number
         pagination = Pagination(page=page, total=response_count.hits.total.value,
-                                record_name='sou', per_page=hits_per_page, bs_version=4, inner_window=1, outer_window=0)
+                                record_name='doc', per_page=hits_per_page, bs_version=4, inner_window=1, outer_window=0)
 
         # Make sure page number stays within the realm of possibility
         if page > pagination.total_pages > 0:
             page = pagination.total_pages
 
         # Figure out which results we should fetch from ES
-        sou_from = (page-1)*hits_per_page
-        sou_to = page*hits_per_page
+        doc_from = (page-1)*hits_per_page
+        doc_to = page*hits_per_page
 
         # Now fetch them
         rs = SouSearch(q, filters=filters, sort=sort)
-        response = rs[sou_from:sou_to].execute()
+        response = rs[doc_from:doc_to].execute()
 
         # Sort year facet by year (asc) rather than by total number of hits
         # TODO: let ES do that instead
@@ -160,7 +161,7 @@ def index():
 
         return render_template("sou/front.html", response=response, total=response.hits.total,
                                pagination=pagination, q=q, sort_options=sort_options, sort_by=sort_by,
-                               order_by=order_by, order_by_next=order_by_next, sou_from=sou_from+1, sou_to=sou_to)
+                               order_by=order_by, order_by_next=order_by_next, doc_from=doc_from+1, doc_to=doc_to)
     except elasticsearch.exceptions.ConnectionError:
         return render_template("sou/error.html", error_title='Ett fel uppstod', error_message='Kunde inte ansluta till sökmotorn.'), 500
     except elasticsearch.exceptions.RequestError:
