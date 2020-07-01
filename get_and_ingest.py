@@ -215,7 +215,11 @@ def add_document_to_db(con, data, titles):
     text = re.sub(r"- (?!och)", "", text)
 
     url_pdf = None
-    bilagor = data['dokumentstatus']['dokbilaga']['bilaga']
+    try:
+        bilagor = data['dokumentstatus']['dokbilaga']['bilaga']
+    except KeyError:
+        log.warning(f"{dok_id} missing attachment; skipping")
+        return
     if isinstance(bilagor, list):
         for bilaga in bilagor:
             if bilaga['dok_id'].upper() == dok_id:
@@ -254,7 +258,7 @@ def get_and_process_json(con, url):
         # Get list of filenames in zip, without filename extension, and uppercased.
         # E.g. ['h8b41.json', 'h8b411.json'] => ['H8B41', 'H8B411']
         zip_dok_ids = list(map(lambda x: os.path.splitext(x)[0].upper(), zip_file.namelist()))
-        sql = f"SELECT dok_id FROM document WHERE dok_id in ({','.join(['?']*len(zip_dok_ids))})"
+        sql = f"SELECT id FROM document WHERE id in ({','.join(['?']*len(zip_dok_ids))})"
         existing_ids = cur.execute(sql, zip_dok_ids).fetchall()
 
         # Skip dok_ids that already exist in the database
