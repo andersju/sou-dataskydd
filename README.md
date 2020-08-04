@@ -14,6 +14,10 @@ There are two parts: a script that fetches JSON documents from data.riksdagen.se
 them into an SQLite database, and ingests said documents into Elasticsearch;  and a single-file Flask app
 for the web service. As of now the code approximately "quick weekend project" quality, but perhaps that will change.
 
+**NOTE:** At the time of hacking this together I wasn't aware of KB's [SOU 1922-1999 dataset](https://data.kb.se/datasets/2015/02/sou/)
+(available as a torrent), nor of the text dumps of said SOUs from [SOUhack](https://github.com/Kungbib/SOUhack), hence the
+scraping and downloading/extracting of PDFs. Using the ready-made text dumps would've avoided this very time-consuming part.
+
 ## Requirements
 
 * Python 3.6+
